@@ -6,7 +6,7 @@ class Paciente extends Model {
     return super.init({
       nome: DataTypes.STRING,
       cpf: DataTypes.STRING,
-      dataNascimento: DataTypes.DATE
+      dataNascimento: DataTypes.DATEONLY
     }, {
       sequelize,
       modelName: 'Paciente'
@@ -44,5 +44,14 @@ class Paciente extends Model {
 }
 
 Paciente.init(sequelize);
+
+sequelize.options.define = {
+  timestamps: true,
+  charset: 'utf8',
+  dialectOptions: {
+    dateStrings: true,
+    typeCast: true,
+    timezone: '-03:00' }
+};
 
 export default Paciente;

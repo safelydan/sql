@@ -5,7 +5,7 @@ import Paciente from './paciente.js';
 export class Consulta extends Model {
   static init(sequelize) {
     return super.init({
-      data: DataTypes.DATE,
+      data: DataTypes.DATEONLY,
       horaInicial: DataTypes.TIME,
       horaFinal: DataTypes.TIME
     }, {
@@ -32,6 +32,16 @@ export class Consulta extends Model {
 }
 
 Consulta.init(sequelize);
+
+
+sequelize.options.define = {
+  timestamps: true,
+  charset: 'utf8',
+  dialectOptions: {
+    dateStrings: true,
+    typeCast: true,
+    timezone: '-03:00' }
+};
 
 // Relacionamento entre Paciente e Consulta (opcional)
 Paciente.hasMany(Consulta);

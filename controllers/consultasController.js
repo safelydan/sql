@@ -111,8 +111,9 @@ export async function listarConsultas() {
     const consultas = await Consulta.findAll({ include: Paciente });
     console.log("Lista de Consultas Agendadas:");
     consultas.forEach((consulta) => {
+      const nomePaciente = consulta.Paciente ? consulta.Paciente.nome : "Paciente não encontrado";
       console.log(
-        `Paciente: ${consulta.Paciente.nome}, Data: ${consulta.data}, Hora Inicial: ${consulta.horaInicial}, Hora Final: ${consulta.horaFinal}`
+        `Paciente: ${nomePaciente}, Data: ${consulta.data}, Hora Inicial: ${consulta.horaInicial}, Hora Final: ${consulta.horaFinal}`
       );
     });
   } catch (error) {
@@ -120,3 +121,5 @@ export async function listarConsultas() {
   }
   mainMenu();
 }
+
+

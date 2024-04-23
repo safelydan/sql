@@ -1,6 +1,7 @@
 import inquirer from "inquirer";
 import { mainMenu } from "../view/menuPrincipal.js";
 import Paciente from "../model/paciente.js";
+import moment from 'moment';
 
 export async function cadastrarPaciente() {
   try {
@@ -26,10 +27,17 @@ export async function cadastrarPaciente() {
         name: "dataNascimento",
         message: "Data de Nascimento do paciente (DD/MM/AAAA): ",
         validate: function (dataNascimento) {
-          return /^\d{2}\/\d{2}\/\d{4}$/.test(dataNascimento) || "Data de nascimento no formato inválido. Por favor, digite no formato: DD/MM/AAAA";
+          if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataNascimento)) {
+            return "Data de nascimento no formato inválido. Por favor, digite no formato: DD/MM/AAAA";
+          }
+          const dataFormatada = moment(dataNascimento, "DD/MM/YYYY");
+          const idade = moment().diff(dataFormatada, 'years');
+          return idade >= 13 || "O paciente deve ter pelo menos 13 anos de idade.";
         },
       },
     ]);
+
+    resposta.dataNascimento = moment(resposta.dataNascimento, "DD/MM/YYYY").format("YYYY-MM-DD");
 
     const novoPaciente = await Paciente.create(resposta);
     console.log(`Paciente ${novoPaciente.nome} adicionado.`);
@@ -66,8 +74,10 @@ export async function listarPacientesPorCPF() {
     const pacientes = await Paciente.findAll({ order: [['cpf', 'ASC']] });
     console.log("Lista de pacientes ordenada por CPF:");
     pacientes.forEach((paciente) => {
+      const dataNascimento = new Date(paciente.dataNascimento);
+      const dataFormatada = dataNascimento.toLocaleDateString('pt-BR');
       console.log(
-        `Nome: ${paciente.nome}, CPF: ${paciente.cpf}, Data de Nascimento: ${paciente.dataNascimento}`
+        `Nome: ${paciente.nome}, CPF: ${paciente.cpf}, Data de Nascimento: ${dataFormatada}`
       );
     });
   } catch (error) {
@@ -81,8 +91,10 @@ export async function listarPacientesPorNome() {
     const pacientes = await Paciente.findAll({ order: [['nome', 'ASC']] });
     console.log("Lista de pacientes ordenada por nome:");
     pacientes.forEach((paciente) => {
+      const dataNascimento = new Date(paciente.dataNascimento);
+      const dataFormatada = dataNascimento.toLocaleDateString('pt-BR');
       console.log(
-        `Nome: ${paciente.nome}, CPF: ${paciente.cpf}, Data de Nascimento: ${paciente.dataNascimento}`
+        `Nome: ${paciente.nome}, CPF: ${paciente.cpf}, Data de Nascimento: ${dataFormatada}`
       );
     });
   } catch (error) {
