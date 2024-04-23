@@ -34,6 +34,10 @@ export class Consulta extends Model {
 Consulta.init(sequelize);
 
 
+Paciente.hasMany(Consulta);
+Consulta.belongsTo(Paciente);
+
+
 sequelize.options.define = {
   timestamps: true,
   charset: 'utf8',
