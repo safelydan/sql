@@ -2,6 +2,7 @@ import inquirer from "inquirer";
 import { mainMenu } from "../view/menuPrincipal.js";
 import Consulta from "../model/consulta.js";
 import Paciente from "../model/paciente.js";
+import moment from "moment";
 
 export async function agendarConsulta() {
   try {
@@ -28,8 +29,11 @@ export async function agendarConsulta() {
         type: "input",
         name: "data",
         message: "Data da consulta (DD/MM/AAAA): ",
-        validate: function (dataNascimento) {
-          return /^\d{2}\/\d{2}\/\d{4}$/.test(dataNascimento) || "Data de nascimento no formato inválido. Por favor, digite no formato: DD/MM/AAAA";
+        validate: function (data) {
+          if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
+            return "Data da consulta inválida. Por favor, digite no formato: DD/MM/AAAA";
+          }
+          return true;
         },
       },
       {
@@ -50,9 +54,11 @@ export async function agendarConsulta() {
       },
     ]);
 
+    const dataFormatada = moment(data, "DD/MM/YYYY").format("YYYY-MM-DD")
+    
     await Consulta.create({
       pacienteId: paciente.id,
-      data,
+      data: dataFormatada,
       horaInicial,
       horaFinal,
     });
@@ -111,9 +117,11 @@ export async function listarConsultas() {
     const consultas = await Consulta.findAll({ include: Paciente });
     console.log("Lista de Consultas Agendadas:");
     consultas.forEach((consulta) => {
+      const data = new Date(consulta.data);
+      const dataFormatada = data.toLocaleDateString('pt-BR');
       const nomePaciente = consulta.Paciente ? consulta.Paciente.nome : "Paciente não encontrado";
       console.log(
-        `Paciente: ${nomePaciente}, Data: ${consulta.data}, Hora Inicial: ${consulta.horaInicial}, Hora Final: ${consulta.horaFinal}`
+        `Paciente: ${nomePaciente} Data: ${dataFormatada} Hora Inicial: ${consulta.horaInicial} Hora Final: ${consulta.horaFinal}`
       );
     });
   } catch (error) {

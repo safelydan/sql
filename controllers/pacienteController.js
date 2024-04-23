@@ -77,7 +77,7 @@ export async function listarPacientesPorCPF() {
       const dataNascimento = new Date(paciente.dataNascimento);
       const dataFormatada = dataNascimento.toLocaleDateString('pt-BR');
       console.log(
-        `Nome: ${paciente.nome}, CPF: ${paciente.cpf}, Data de Nascimento: ${dataFormatada}`
+        `Nome: ${paciente.nome} CPF: ${paciente.cpf} Data de Nascimento: ${dataFormatada}`
       );
     });
   } catch (error) {
