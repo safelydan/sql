@@ -4,6 +4,11 @@ import { DataTypes, Model } from 'sequelize';
 class Paciente extends Model {
   static init(sequelize) {
     return super.init({
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
       nome: DataTypes.STRING,
       cpf: DataTypes.STRING,
       dataNascimento: DataTypes.DATEONLY

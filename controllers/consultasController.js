@@ -1,8 +1,12 @@
 import inquirer from "inquirer";
+import moment from "moment";
 import { mainMenu } from "../view/menuPrincipal.js";
 import Consulta from "../model/consulta.js";
 import Paciente from "../model/paciente.js";
-import moment from "moment";
+
+function formatarData(data) {
+  return moment(data, "DD/MM/YYYY").format("YYYY-MM-DD");
+}
 
 export async function agendarConsulta() {
   try {
@@ -12,7 +16,7 @@ export async function agendarConsulta() {
         name: "cpf",
         message: "CPF do paciente: ",
         validate: function (cpf) {
-          return /^\d{11}$/.test(cpf) || "CPF inválido. Por favor digite corretamente";
+          return /^\d{11}$/.test(cpf) || "CPF inválido. Por favor, digite corretamente";
         },
       },
     ]);
@@ -24,16 +28,24 @@ export async function agendarConsulta() {
       return mainMenu();
     }
 
-    const { data, horaInicial, horaFinal } = await inquirer.prompt([
+    console.log(`Paciente encontrado:
+ID: ${paciente.toJSON().id}
+Nome: ${paciente.toJSON().nome}
+CPF: ${paciente.toJSON().cpf}`);
+
+    
+    const {PacienteId, data, horaInicial, horaFinal } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "PacienteId",
+        message: "Confirme o ID do paciente: "
+      },
       {
         type: "input",
         name: "data",
         message: "Data da consulta (DD/MM/AAAA): ",
         validate: function (data) {
-          if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
-            return "Data da consulta inválida. Por favor, digite no formato: DD/MM/AAAA";
-          }
-          return true;
+          return /^\d{2}\/\d{2}\/\d{4}$/.test(data) || "Data da consulta inválida. Por favor, digite no formato: DD/MM/AAAA";
         },
       },
       {
@@ -54,15 +66,16 @@ export async function agendarConsulta() {
       },
     ]);
 
-    const dataFormatada = moment(data, "DD/MM/YYYY").format("YYYY-MM-DD")
-    
+    const dataFormatada = formatarData(data);
+
     await Consulta.create({
-      pacienteId: paciente.id,
+      PacienteId,
       data: dataFormatada,
       horaInicial,
       horaFinal,
     });
-    console.log(`Consulta agendada para o paciente ID ${paciente.id} no dia ${data}, das ${horaInicial} às ${horaFinal}.`);
+
+    console.log(`Consulta agendada para o paciente ${paciente.nome} no dia ${data}, das ${horaInicial} às ${horaFinal}.`);
   } catch (error) {
     console.error("Erro ao agendar consulta:", error);
   }
@@ -76,7 +89,7 @@ export async function cancelarAgendamento() {
       name: "cpf",
       message: "Digite o CPF do paciente cuja consulta deseja cancelar: ",
       validate: function (cpf) {
-        return /^\d{11}$/.test(cpf) || "CPF inválido. Por favor digite corretamente";
+        return /^\d{11}$/.test(cpf) || "CPF inválido. Por favor, digite corretamente";
       },
     });
 
@@ -129,5 +142,3 @@ export async function listarConsultas() {
   }
   mainMenu();
 }
-
-

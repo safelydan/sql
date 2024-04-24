@@ -5,6 +5,10 @@ import Paciente from './paciente.js';
 export class Consulta extends Model {
   static init(sequelize) {
     return super.init({
+      PacienteId: {
+        type: DataTypes.INTEGER, // Supondo que o id do paciente seja um número inteiro
+        allowNull: false // Defina como false se pacienteId for obrigatório
+      },
       data: DataTypes.DATEONLY,
       horaInicial: DataTypes.TIME,
       horaFinal: DataTypes.TIME
@@ -14,29 +18,14 @@ export class Consulta extends Model {
     });
   }
 
-  validarConsulta(){
+  // Métodos de validação aqui...
 
-  }
-
-  validarHoraInicial(){
-
-  }
-
-  validarHoraFinal(){
-
-  }
-
-  validarAgendamentoFuturo(){
-    
-  }
 }
 
 Consulta.init(sequelize);
 
-
 Paciente.hasMany(Consulta);
 Consulta.belongsTo(Paciente);
-
 
 sequelize.options.define = {
   timestamps: true,
@@ -44,11 +33,8 @@ sequelize.options.define = {
   dialectOptions: {
     dateStrings: true,
     typeCast: true,
-    timezone: '-03:00' }
+    timezone: '-03:00'
+  }
 };
-
-// Relacionamento entre Paciente e Consulta (opcional)
-Paciente.hasMany(Consulta);
-Consulta.belongsTo(Paciente);
 
 export default Consulta;
