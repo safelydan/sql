@@ -131,10 +131,11 @@ export async function cancelarAgendamento() {
       name: "consultaId",
       message: "Selecione a consulta que deseja cancelar: ",
       choices: consultas.map((consulta) => ({
-        name: `Data: ${consulta.data}, Hora Inicial: ${consulta.horaInicial}, Hora Final: ${consulta.horaFinal}`,
+        name: `Data: ${new Date(consulta.data).toLocaleDateString("pt-BR")} H.Ini: ${consulta.horaInicial} H.Fim: ${consulta.horaFinal} Nome: ${paciente.nome}`,
         value: consulta.id,
       })),
     });
+    
 
     await Consulta.destroy({ where: { id: consultaParaCancelar.consultaId } });
     console.log("Consulta cancelada com sucesso.");
