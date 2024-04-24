@@ -16,7 +16,10 @@ export async function agendarConsulta() {
         name: "cpf",
         message: "CPF do paciente: ",
         validate: function (cpf) {
-          return /^\d{11}$/.test(cpf) || "CPF inválido. Por favor, digite corretamente";
+          return (
+            /^\d{11}$/.test(cpf) ||
+            "CPF inválido. Por favor, digite corretamente"
+          );
         },
       },
     ]);
@@ -33,19 +36,21 @@ ID: ${paciente.toJSON().id}
 Nome: ${paciente.toJSON().nome}
 CPF: ${paciente.toJSON().cpf}`);
 
-    
-    const {PacienteId, data, horaInicial, horaFinal } = await inquirer.prompt([
+    const { PacienteId, data, horaInicial, horaFinal } = await inquirer.prompt([
       {
         type: "input",
         name: "PacienteId",
-        message: "Confirme o ID do paciente: "
+        message: "Confirme o ID do paciente: ",
       },
       {
         type: "input",
         name: "data",
         message: "Data da consulta (DD/MM/AAAA): ",
         validate: function (data) {
-          return /^\d{2}\/\d{2}\/\d{4}$/.test(data) || "Data da consulta inválida. Por favor, digite no formato: DD/MM/AAAA";
+          return (
+            /^\d{2}\/\d{2}\/\d{4}$/.test(data) ||
+            "Data da consulta inválida. Por favor, digite no formato: DD/MM/AAAA"
+          );
         },
       },
       {
@@ -53,7 +58,10 @@ CPF: ${paciente.toJSON().cpf}`);
         name: "horaInicial",
         message: "Hora inicial da consulta (HH:MM): ",
         validate: function (horaInicial) {
-          return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(horaInicial) || "Formato de hora inválido. Use o formato HH:MM.";
+          return (
+            /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(horaInicial) ||
+            "Formato de hora inválido. Use o formato HH:MM."
+          );
         },
       },
       {
@@ -61,7 +69,10 @@ CPF: ${paciente.toJSON().cpf}`);
         name: "horaFinal",
         message: "Hora final da consulta (HH:MM): ",
         validate: function (horaFinal) {
-          return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(horaFinal) || "Formato de hora inválido. Use o formato HH:MM.";
+          return (
+            /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(horaFinal) ||
+            "Formato de hora inválido. Use o formato HH:MM."
+          );
         },
       },
     ]);
@@ -75,7 +86,9 @@ CPF: ${paciente.toJSON().cpf}`);
       horaFinal,
     });
 
-    console.log(`Consulta agendada para o paciente ${paciente.nome} no dia ${data}, das ${horaInicial} às ${horaFinal}.`);
+    console.log(
+      `Consulta agendada para o paciente ${paciente.nome} no dia ${data}, das ${horaInicial} às ${horaFinal}.`
+    );
   } catch (error) {
     console.error("Erro ao agendar consulta:", error);
   }
@@ -89,7 +102,9 @@ export async function cancelarAgendamento() {
       name: "cpf",
       message: "Digite o CPF do paciente cuja consulta deseja cancelar: ",
       validate: function (cpf) {
-        return /^\d{11}$/.test(cpf) || "CPF inválido. Por favor, digite corretamente";
+        return (
+          /^\d{11}$/.test(cpf) || "CPF inválido. Por favor, digite corretamente"
+        );
       },
     });
 
@@ -100,10 +115,14 @@ export async function cancelarAgendamento() {
       return mainMenu();
     }
 
-    const consultas = await Consulta.findAll({ where: { pacienteId: paciente.id } });
+    const consultas = await Consulta.findAll({
+      where: { PacienteId: paciente.id },
+    });
 
     if (consultas.length === 0) {
-      console.log(`Não há consultas agendadas para o paciente com CPF ${resposta.cpf}.`);
+      console.log(
+        `Não há consultas agendadas para o paciente com CPF ${resposta.cpf}.`
+      );
       return mainMenu();
     }
 
@@ -128,13 +147,17 @@ export async function cancelarAgendamento() {
 export async function listarConsultas() {
   try {
     const consultas = await Consulta.findAll({ include: Paciente });
-    console.log("Lista de Consultas Agendadas:");
+    console.log(
+`----------------------------------------------------------------------------------------- 
+  Data          H.Ini        H.Fim      Nome   
+------------------------------------------------------------------------------------------`);
     consultas.forEach((consulta) => {
       const data = new Date(consulta.data);
-      const dataFormatada = data.toLocaleDateString('pt-BR');
-      const nomePaciente = consulta.Paciente ? consulta.Paciente.nome : "Paciente não encontrado";
-      console.log(
-        `Paciente: ${nomePaciente} Data: ${dataFormatada} Hora Inicial: ${consulta.horaInicial} Hora Final: ${consulta.horaFinal}`
+      const dataFormatada = data.toLocaleDateString("pt-BR");
+      const nomePaciente = consulta.Paciente
+        ? consulta.Paciente.nome
+        : "Paciente não encontrado";
+console.log(`${dataFormatada}     ${consulta.horaInicial}     ${consulta.horaFinal}   ${nomePaciente}`
       );
     });
   } catch (error) {
